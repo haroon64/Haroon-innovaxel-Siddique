@@ -1,12 +1,12 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import network,network2
-
+from app.routes import network
+from app.database import init_db
 app = FastAPI(title="Gene Interaction Network API")
 
 
-
+url_collection=init_db() 
 # 🔥 Allow CORS for Frontend
 app.add_middleware(
     CORSMiddleware,
@@ -16,10 +16,10 @@ app.add_middleware(
     allow_headers=["*"],  # ✅ Allow all headers
 )
 # Include routers
-app.include_router(network.router, prefix="/network", tags=["Gene Network"])
-app.include_router(network2.router2, prefix="/drug_info", tags=["Drugs Information"])
+app.include_router(network.router, prefix="/network", tags=["APis"])
+
 
 # Root endpoint
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Gene Interaction Network API"}
+    return {"message": "welcome to url shortener"}
