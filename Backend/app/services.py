@@ -4,6 +4,8 @@ from app.database import db
 import string
 import random
 from app.database import url_collection
+from fastapi import APIRouter, HTTPException
+
 
 def generate_shortcode(length=6):
     characters = string.ascii_letters + string.digits
@@ -15,18 +17,22 @@ def generate_shortcode(length=6):
     return code
 
 
-
-
 def create_short_url_service(data: URLCreateRequest):
-
-   
     if url_collection is None:
         raise RuntimeError("Database not initialized. Make sure init_db() has been called.")
-    print(1)
+
     now = datetime.utcnow().isoformat()
-    print(2)
     short_code = generate_shortcode()
-    print(3)
+
+    # Check if the URL already exists
+    existing_doc = url_collection.find_one({"url": str(data.url)})
+
+    if existing_doc :
+      
+        raise HTTPException(status_code=400 ,detail="Url already exists")
+               
+
+    # Create new document if not found
     doc = {
         "url": str(data.url),
         "shortCode": short_code,
@@ -34,9 +40,24 @@ def create_short_url_service(data: URLCreateRequest):
         "updatedAt": now,
         "accessCount": 0
     }
-    print
+
     result = url_collection.insert_one(doc)
-    print(5)
     doc["id"] = str(result.inserted_id)
-    
     return doc
+
+
+def get_original_url_service(short_code: str):
+    if url_collection is None:
+        raise RuntimeError("Database not initialized. Make sure init_db() has been called.")
+    
+    doc = url_collection.find_one({"shortCode": short_code})
+    
+    if doc:
+        # Increment access count
+        url_collection.update_one({"shortCode": short_code}, {"$inc": {"accessCount": 1}})
+        
+        # Convert ObjectId to string for JSON serialization
+        doc["id"] = str(doc["_id"])
+        return doc
+    
+    return None

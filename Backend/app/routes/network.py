@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from starlette.responses import JSONResponse
 import logging
 import sys
-from app.services import create_short_url_service 
+from app.services import create_short_url_service ,get_original_url_service
 import random
 import string
 from datetime import datetime
@@ -22,8 +22,6 @@ router = APIRouter()
 logging.basicConfig(level=logging.INFO)
 
 
-# Helper to generate unique short codes
-
 
 @router.post("/", response_model=URLResponse, status_code=201)
 async def create_short_url(data: URLCreateRequest):
@@ -32,7 +30,21 @@ async def create_short_url(data: URLCreateRequest):
     
     if response:
         return response
+    
+  
+
     else:
         raise HTTPException(status_code=500, detail="Failed to create short URL")
     
+
+@router.get("original_url/{short_code}", response_model=URLResponse)
+async def get_orginal_url(short_code: str):
+   
+    response = get_original_url_service(short_code)
+    
+    if response:
+        return response
+        
+    else:
+        raise HTTPException(status_code=404, detail="Short URL not found")
 
