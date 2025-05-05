@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 
-@router.post("create/", response_model=URLResponse, status_code=201)
+@router.post("create_url/", response_model=URLResponse, status_code=201)
 async def create_short_url(data: URLCreateRequest):
     
     response = create_short_url_service(data)
