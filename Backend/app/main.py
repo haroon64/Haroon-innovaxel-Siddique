@@ -3,10 +3,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import network
 from app.database import init_db
-app = FastAPI(title="Gene Interaction Network API")
+app = FastAPI(title="Innovaxel Assessment test Name : Muhammad Haroon Siddique")
 
 
-url_collection=init_db() 
+ 
 # 🔥 Allow CORS for Frontend
 app.add_middleware(
     CORSMiddleware,

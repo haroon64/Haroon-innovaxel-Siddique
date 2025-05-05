@@ -16,6 +16,8 @@ class URLResponse(BaseModel):
     shortCode: str
     createdAt: str
     updatedAt: str
+    accessCount: int
+
 
 class URLStatsResponse(URLResponse):
     accessCount: int
