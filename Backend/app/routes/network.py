@@ -9,13 +9,9 @@ from datetime import datetime
 from app.database import init_db
 
 
-from app.models import URLCreateRequest, URLResponse, URLUpdateRequest, URLStatsResponse
+from app.models import URLCreateRequest, URLResponse, URLUpdateRequest
 
 router = APIRouter()
-
-
-
-
 
 
 
