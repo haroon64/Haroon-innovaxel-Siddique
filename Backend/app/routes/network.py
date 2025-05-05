@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from starlette.responses import JSONResponse
 import logging
 import sys
-from app.services import create_short_url_service ,get_original_url_service
+from app.services import create_short_url_service ,get_original_url_service,delete_short_url_service
 import random
 import string
 from datetime import datetime
@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 
-@router.post("/", response_model=URLResponse, status_code=201)
+@router.post("create/", response_model=URLResponse, status_code=201)
 async def create_short_url(data: URLCreateRequest):
     
     response = create_short_url_service(data)
@@ -48,3 +48,20 @@ async def get_orginal_url(short_code: str):
     else:
         raise HTTPException(status_code=404, detail="Short URL not found")
 
+
+@router.delete("delete_url/{short_code}",  response_model=URLResponse )
+def delete_short_url(short_code: str ):
+    response = delete_short_url_service(short_code)
+    print(response)
+    if response:
+        return response
+    else:
+        raise HTTPException(status_code=404, detail="Short URL not found")
+    
+  
+  
+  
+  
+    result = url_collection.delete_one({"shortCode": short_code})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Short URL not found")

@@ -61,3 +61,19 @@ def get_original_url_service(short_code: str):
         return doc
     
     return None
+
+def delete_short_url_service(short_code: str):
+    if url_collection is None:
+        raise RuntimeError("Database not initialized. Make sure init_db() has been called.")
+    print("Deleting short URL with code:", short_code)
+    doc = url_collection.find_one({"shortCode": short_code})
+    
+    print("Document found:", doc)
+    result = url_collection.delete_one({"shortCode": short_code})
+  
+    if result and doc  :
+        doc["id"] = str(doc["_id"])
+        return doc
+    
+    else:
+        raise HTTPException(status_code=404, detail="Short URL not found")
