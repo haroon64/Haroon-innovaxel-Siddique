@@ -4,6 +4,8 @@ from app.database import db
 import string
 import random
 from app.database import url_collection
+from pymongo import ReturnDocument
+
 from fastapi import APIRouter, HTTPException
 
 
@@ -77,3 +79,25 @@ def delete_short_url_service(short_code: str):
     
     else:
         raise HTTPException(status_code=404, detail="Short URL not found")
+    
+
+def update_short_url_service(short_code: str, data: URLCreateRequest):
+    if url_collection is None:
+        raise RuntimeError("Database not initialized. Make sure init_db() has been called.")
+
+    now = datetime.utcnow().isoformat()
+
+    result = url_collection.find_one_and_update(
+        {"shortCode": short_code},
+        {"$set": {"url": str(data.url), "updatedAt": now}},
+        return_document=ReturnDocument.AFTER  # ✅ Correct way to get the updated document
+    )
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Short URL not found")
+
+    # Convert ObjectId and clean up for response
+    result["id"] = str(result["_id"])
+    del result["_id"]
+
+    return result
